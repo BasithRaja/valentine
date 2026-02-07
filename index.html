@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Valentine ❤️</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins&family=Meera+Inimai&display=swap" rel="stylesheet">
+
+<style>
+body{
+    margin:0;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(135deg,#ff9a9e,#fad0c4);
+    font-family:'Poppins',sans-serif;
+    overflow:hidden;
+}
+
+.card{
+    background:#fff;
+    padding:25px;
+    border-radius:25px;
+    width:90%;
+    max-width:440px;
+    text-align:center;
+    box-shadow:0 20px 40px rgba(0,0,0,.2);
+}
+
+h1,h2{
+    font-family:'Pacifico',cursive;
+    color:#ff4d6d;
+}
+
+.buttons{
+    display:flex;
+    justify-content:center;
+    gap:20px;
+    margin-top:20px;
+}
+
+button{
+    padding:12px 25px;
+    border-radius:30px;
+    border:none;
+    font-size:16px;
+    cursor:pointer;
+}
+
+#yes{ background:#ff4d6d; color:#fff; }
+#no{ background:#eee; }
+
+.result{ display:none; }
+
+/* SLIDESHOW */
+.slideshow{
+    position:relative;
+    height:380px;
+    margin-top:20px;
+}
+
+.slideshow img{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:380px;
+    object-fit:cover;
+    border-radius:20px;
+    opacity:0;
+    transition:opacity 1s ease;
+}
+
+.slideshow img.active{
+    opacity:1;
+}
+
+/* POPUP */
+.popup-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.55);
+    display:none;
+    justify-content:center;
+    align-items:center;
+    z-index:10;
+}
+
+.popup{
+    background:#fff;
+    padding:25px;
+    border-radius:22px;
+    width:85%;
+    max-width:360px;
+    position:relative;
+}
+
+.popup h3{
+    font-family:'Pacifico',cursive;
+    color:#ff4d6d;
+}
+
+.popup p{
+    font-family:'Meera Inimai',serif;
+    font-size:16px;
+    line-height:1.9;
+}
+
+.close-btn{
+    position:absolute;
+    top:10px;
+    right:15px;
+    font-size:20px;
+    cursor:pointer;
+    color:#ff4d6d;
+}
+
+/* MUSIC BUTTON */
+#musicBtn{
+    display:none;
+    position:fixed;
+    bottom:25px;
+    left:50%;
+    transform:translateX(-50%);
+    background:#ff4d6d;
+    color:#fff;
+    padding:12px 22px;
+    border-radius:30px;
+    font-size:15px;
+    cursor:pointer;
+    z-index:20;
+}
+</style>
+</head>
+
+<body>
+
+<!-- QUESTION -->
+<div class="card" id="question">
+    <h1>Will you be my Valentine? 💖</h1>
+    <div class="buttons">
+        <button id="yes">Yes ❤️</button>
+        <button id="no">No 😭</button>
+    </div>
+</div>
+
+<!-- RESULT -->
+<div class="card result" id="result">
+    <h2>Congratulations 💍</h2>
+    <h2>Mrs. Shifana Basith ❤️</h2>
+
+    <div class="slideshow" id="slideshow">
+        <img src="photo1.jpg" class="active">
+        <img src="photo2.jpg">
+        <img src="photo3.jpg">
+        <img src="photo4.jpg">
+        <img src="photo5.jpg">
+        <img src="photo6.jpg">
+        <img src="photo7.jpg">
+        <img src="photo8.jpg">
+        <img src="photo9.jpg">
+        <img src="photo10.jpg">
+    </div>
+</div>
+
+<!-- POEM POPUP -->
+<div class="popup-overlay" id="popup">
+    <div class="popup">
+        <div class="close-btn" onclick="closePopup()">✖</div>
+        <h3>என் உயிரே ❤️</h3>
+        <p>
+            உன் சிரிப்பில் என் உலகம் பிறக்கிறது,<br>
+            உன் பார்வையில் என் வாழ்க்கை மலர்கிறது.<br><br>
+
+            கைகளில் கை சேர்ந்த அந்த நொடி,<br>
+            காலம் முழுதும் எனக்கு சொந்தமானது.<br><br>
+
+            இன்று காதல், நாளை வாழ்வு,<br>
+            என்றும் நானும் நீயும் ஒன்றாய் 💍
+        </p>
+    </div>
+</div>
+
+<!-- MUSIC -->
+<audio id="bgMusic" loop>
+    <source src="uyire-uyire.mp3" type="audio/mpeg">
+</audio>
+
+<div id="musicBtn">🎶 Tap to play song ❤️</div>
+
+<script>
+const noBtn = document.getElementById("no");
+const yesBtn = document.getElementById("yes");
+const slides = document.querySelectorAll("#slideshow img");
+const music = document.getElementById("bgMusic");
+const musicBtn = document.getElementById("musicBtn");
+
+let index = 0;
+
+/* NO BUTTON ESCAPE */
+function escapeNo(){
+    noBtn.style.position="fixed";
+    noBtn.style.left=Math.random()*(window.innerWidth-noBtn.offsetWidth)+"px";
+    noBtn.style.top=Math.random()*(window.innerHeight-noBtn.offsetHeight)+"px";
+    noBtn.innerText="Please no 😭";
+}
+noBtn.onmouseenter = escapeNo;
+noBtn.ontouchstart = e => { e.preventDefault(); escapeNo(); };
+
+/* SLIDESHOW */
+function startSlideshow(){
+    setInterval(()=>{
+        slides[index].classList.remove("active");
+        index = (index + 1) % slides.length;
+        slides[index].classList.add("active");
+    }, 4000); // 4 seconds per photo
+}
+
+/* POPUP */
+function closePopup(){
+    document.getElementById("popup").style.display="none";
+}
+
+/* YES CLICK */
+yesBtn.onclick = ()=>{
+    document.getElementById("question").style.display="none";
+    document.getElementById("result").style.display="block";
+    document.getElementById("popup").style.display="flex";
+    noBtn.style.display="none";
+
+    startSlideshow();
+    musicBtn.style.display="block";
+};
+
+/* MUSIC PLAY */
+musicBtn.onclick = ()=>{
+    music.volume = 0.6;
+    music.play();
+    musicBtn.style.display="none";
+};
+</script>
+
+</body>
+</html>
